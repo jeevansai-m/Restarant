@@ -1,0 +1,54 @@
+{% extends "layout.html" %} {% block body %}
+<section class="menu section bd-container" id="menu">
+
+<h1 class="section-title"> Available Tables </h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+    <div class="alert {{ category }}">
+        <input type="checkbox" id="alert1"/>
+    <label class="close" title="close" for="alert1">
+      <i class="icon-remove"></i>
+    </label>
+        <p class="inner">
+            {{ message }}
+        </p>
+    </div>
+    {% endfor %}
+            {% endif %}
+        {% endwith %}
+</section>
+
+<!-- TABLE STARTS -->
+<table>
+  <thead id="table-header">
+    <tr>
+        <th>Table</th>
+        <th>Time</th>
+        <th>Date</th>
+        <th>Accomodation</th>
+        <th></th>
+    </tr>
+    </thead>
+    
+    <tbody>
+    {% for table in tables %}
+        <tr>
+            <td>{{ table.table }}</td>
+            <td>{{ table.time }}</td>
+            <td>{{ table.date }}</td>
+            <td>{{ table.accomodation }}</td>
+            <td>
+                <!-- <a href ='#' class = 'button'>Reserve</a> -->
+                <form method = 'POST' action="?">
+                    {{ reserve_form.hidden_tag() }}
+                    <input id="reserved_table" name="reserved_table" type="hidden" value="{{ table.table }}">
+                    {{ reserve_form.submit(class = 'button') }}
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<!-- TABLE ENDS -->
+{% endblock %}

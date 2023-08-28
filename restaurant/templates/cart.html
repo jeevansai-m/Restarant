@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+	<title>CART</title>
+	<link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/css/style-cart.css') }}">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,900" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/css/alerts.css') }}">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+	
+   <div class="CartContainer">
+   	   <div class="Header">
+   	   	<h3 class="Heading">Cart</h3>
+   	   	<a href="{{ url_for('menu_page') }}" class = "back"><h5 class="Action">Back to Menu <i class='bx bxs-food-menu'></i></h5></a>
+			  
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			  {% if messages %}
+			  {% for category, message in messages %}
+	  <div class="alert {{ category }}">
+		  <input type="checkbox" id="alert1"/>
+	  <label class="close" title="close" for="alert1">
+		<i class="icon-remove"></i>
+	  </label>
+		  <p class="inner">
+			  {{ message }}
+		  </p>
+	  </div>
+	  {% endfor %}
+			  {% endif %}
+		  {% endwith %} 
+
+	</div>
+	   {% for selected_item in selected_items %}
+   	   <div class="Cart-Items">
+         
+   	   	  <div class="image-box">
+   	   	    <img src="{{ url_for('static', filename = 'styles/img/'+selected_item.source) }}" alt="" class="menu__img">
+   	   	  </div>
+
+   	   	  <div class="about">
+            <h1 class="title"> {{ selected_item.name }}</h1>
+   	   	  </div>
+
+   	   	  <div class="prices">
+   	   	  	<div class="amount">€{{ selected_item.price }}</div>
+			<input id="count{{loop.index}}" type="number" value="1" min="1" oninput="updateorder('count{{loop.index}}', '{{loop.index}}count')" />
+			<form method = 'POST' action="/delete_cart_item">
+			<input id="ordered_item" name="ordered_item1" type="hidden" value="{{ selected_item.name }}" />
+   	   	  	<button class="remove"><i class='bx bxs-trash-alt'></i></button> 
+			</form>
+   	   	  </div>
+        
+   	   </div>
+	   {% endfor %}
+	   <script>
+		function updateorder(name, id) {
+		  $("#"+id).val($("#"+name).val());
+		  console.log("hey");
+		};
+	</script>
+   	 	<!-- <hr> -->
+		<div class="checkout">
+			<div class="total">
+				<div>
+					<div class="Subtotal">Sub-Total</div>
+					<div class="items"> X items</div>
+				</div>
+				<div class="total-amount">€ {{ selected_items | sum(attribute='price') }}</div>
+			</div>
+			<form method = 'POST' action="?">
+				<!-- Note: This part seems useless -->
+				{{ order_form.hidden_tag() }}
+				{% for selected_item in selected_items %}
+				<input name="{{ selected_item.name }}count" type="hidden" value="1" min="1" id="{{loop.index}}count">
+				<input id="ordered_item" name="ordered_item{{loop.index}}" type="hidden" value="{{ selected_item.name }}" >
+				{% if loop.last	%}<input name="totalcounts" type="hidden" value="{{loop.index}}">{% endif %}
+				{% endfor %}
+				{{ order_form.submit(class = 'button') }}
+			</form>
+			<br/><br/><br/>
+		</div>
+		<br/><br/><br/>
+		
+
+ 	</div>
+	<br/><br/><br/>
+</body>
+</html>
